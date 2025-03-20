@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Eazylink_webapp
 
-## Getting Started
+Eazylink est une plateforme de collaboration qui intègre Notion et Figma pour simplifier la gestion de projets.
 
-First, run the development server:
+## Technologies utilisées
+
+- **Frontend** : Next.js, TypeScript, Tailwind CSS
+- **Backend** : Supabase (PostgreSQL, Auth, Storage)
+- **Intégrations** : 
+  - Notion (via MCP Server)
+  - Figma (via MCP Server)
+
+## Configuration requise
+
+- Node.js 18+
+- npm ou yarn
+
+## Installation
 
 ```bash
+# Cloner le repository
+git clone https://github.com/AdminEZK/Eazylink_webapp.git
+cd Eazylink_webapp
+
+# Installer les dépendances
+npm install
+
+# Lancer le serveur de développement
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Structure du projet
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+src/
+  ├── app/              # Pages et routes Next.js
+  ├── components/       # Composants React réutilisables
+  ├── lib/             # Utilitaires et configurations
+  └── types/           # Types TypeScript
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Fonctionnalités
 
-## Learn More
+- Authentification avec Supabase
+- Intégration sécurisée avec Notion
+- Intégration sécurisée avec Figma
+- Gestion des workspaces collaboratifs
 
-To learn more about Next.js, take a look at the following resources:
+## Sécurité
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Les tokens API sensibles (Notion, Figma) sont gérés de manière sécurisée via des serveurs MCP dédiés et ne sont jamais exposés côté client.

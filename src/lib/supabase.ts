@@ -1,29 +1,79 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = 'https://qfpviwjjbxqliyskpuzb.supabase.co'
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmcHZpd2pqYnhxbGl5c2twdXpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI0ODYwMDUsImV4cCI6MjA1ODA2MjAwNX0.DgHzDoA9zskmnFcO5GvoaMM4KB5lBuT8ULUCkGZhKKs'
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables')
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // Types pour la base de données
 export type Profile = {
   id: string
-  email: string
+  type: 'freelance' | 'company'
+  created_at: string
+  updated_at: string
   full_name?: string
   avatar_url?: string
-  created_at: string
+  website?: string
+  company_name?: string
+  company_size?: string
+  industry?: string
+  location?: string
+  email: string
 }
 
-export type Workspace = {
+export type Project = {
   id: string
-  name: string
   created_at: string
-  owner_id: string
+  updated_at: string
+  title: string
+  description: string
+  company_id: string
+  budget_min?: number | null
+  budget_max?: number | null
+  status: 'draft' | 'published' | 'closed'
+  skills: string[]
+  duration?: string
+  location?: string
 }
 
-export type Member = {
-  workspace_id: string
-  user_id: string
-  role: 'owner' | 'admin' | 'member'
-  joined_at: string
+export type Mission = {
+  id: string
+  created_at: string
+  updated_at: string
+  project_id: string
+  freelance_id: string
+  status: 'pending' | 'accepted' | 'rejected' | 'completed'
+  proposal_text?: string
+  rate?: number
+  start_date?: string
+  end_date?: string
+}
+
+export type Invoice = {
+  id: string
+  created_at: string
+  updated_at: string
+  mission_id: string
+  amount: number
+  status: 'draft' | 'sent' | 'paid' | 'cancelled'
+  due_date?: string
+  paid_at?: string
+  invoice_number?: string
+  stripe_payment_intent_id?: string
+}
+
+// Types pour les vues
+export type FreelanceMission = Mission & {
+  project_title: string
+  company_id: string
+  company_name: string
+}
+
+export type CompanyProject = Project & {
+  applications_count: number
+  hired_count: number
 }

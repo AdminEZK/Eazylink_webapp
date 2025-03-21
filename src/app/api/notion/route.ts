@@ -1,29 +1,98 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
-import { NextResponse } from 'next/server'
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from 'next/server';
 
-// Les appels à l'API Notion sont gérés via le serveur MCP
-const MCP_NOTION_ENDPOINT = process.env.MCP_NOTION_ENDPOINT || 'http://localhost:3001'
+// Configuration du serveur MCP pour Notion
+const MCP_NOTION_ENDPOINT = process.env.MCP_NOTION_ENDPOINT || 'http://localhost:3001';
 
 async function checkAuth() {
-  const supabase = createRouteHandlerClient({ cookies })
-  const { data: { session } } = await supabase.auth.getSession()
-  return session
+  const supabase = createRouteHandlerClient({ cookies });
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    throw new Error('Unauthorized');
+  }
+  return session;
 }
 
-export async function GET(request: Request) {
-  const session = await checkAuth()
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
+// GET /api/notion/pages - Récupérer les pages
+export async function GET(request: NextRequest) {
   try {
-    // L'appel est relayé au serveur MCP qui gère le token de manière sécurisée
-    const response = await fetch(`${MCP_NOTION_ENDPOINT}/api/pages`)
-    const data = await response.json()
-    return NextResponse.json(data)
+    await checkAuth();
+    const { searchParams } = new URL(request.url);
+    const path = searchParams.get('path') || 'pages';
+
+    const response = await fetch(`${MCP_NOTION_ENDPOINT}/api/${path}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch Notion ${path}`);
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data);
   } catch (error) {
-    console.error('Notion API error:', error)
-    return NextResponse.json({ error: 'Failed to fetch Notion data' }, { status: 500 })
+    console.error('Notion API error:', error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { status: error instanceof Error && error.message === 'Unauthorized' ? 401 : 500 }
+    );
+  }
+}
+
+// POST /api/notion/pages - Créer une nouvelle page
+export async function POST(request: NextRequest) {
+  try {
+    await checkAuth();
+    const body = await request.json();
+
+    const response = await fetch(`${MCP_NOTION_ENDPOINT}/api/pages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Failed to create Notion page: ${error}`);
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Notion API error:', error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { status: error instanceof Error && error.message === 'Unauthorized' ? 401 : 500 }
+    );
+  }
+}
+
+// PATCH /api/notion/pages - Mettre à jour une page
+export async function PATCH(request: NextRequest) {
+  try {
+    await checkAuth();
+    const body = await request.json();
+
+    const response = await fetch(`${MCP_NOTION_ENDPOINT}/api/pages`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Failed to update Notion page: ${error}`);
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Notion API error:', error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { status: error instanceof Error && error.message === 'Unauthorized' ? 401 : 500 }
+    );
   }
 }

@@ -1,11 +1,14 @@
-import './globals.css'
 import { Inter } from 'next/font/google'
+import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+})
 
 export const metadata = {
-  title: 'Eazylink - Plateforme de collaboration',
-  description: 'Eazylink est une plateforme qui simplifie la collaboration et la gestion de projets.',
+  title: 'Eazylink - Connectez les entreprises aux meilleurs freelances',
+  description: 'Plateforme de mise en relation entre entreprises et freelances',
 }
 
 export default function RootLayout({
@@ -14,13 +17,13 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="fr" className="h-full bg-gray-100">
+    <html lang="fr" className={inter.className}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body className={`h-full ${inter.className}`}>
+      <body className="min-h-screen bg-gray-50">
         <div id="root">{children}</div>
       </body>
     </html>

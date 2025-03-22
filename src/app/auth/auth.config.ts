@@ -1,33 +1,42 @@
-import { ThemeSupa } from '@supabase/auth-ui-shared'
-import { Provider } from '@supabase/supabase-js'
+import { Session, User } from '@supabase/supabase-js'
+import { getBaseUrl } from '@/lib/middleware.config'
+
+interface RedirectParams {
+  url: string
+  baseUrl: string
+}
+
+interface SessionParams {
+  session: Session | null
+  user: User
+}
 
 export const authConfig = {
-  providers: ['github'] as Provider[],
-  appearance: {
-    theme: ThemeSupa,
-    variables: {
-      default: {
-        colors: {
-          brand: '#2563eb',
-          brandAccent: '#1d4ed8',
-        },
-      },
+  providers: {
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+      callbackUrl: `${getBaseUrl()}/auth/callback`,
     },
   },
-  localization: {
-    variables: {
-      sign_in: {
-        email_label: 'Adresse email',
-        password_label: 'Mot de passe',
-        button_label: 'Se connecter',
-      },
-      sign_up: {
-        email_label: 'Adresse email',
-        password_label: 'Mot de passe',
-        button_label: 'Créer un compte',
-      },
+  pages: {
+    signIn: '/auth/login',
+    signOut: '/auth/logout',
+    error: '/auth/error',
+    verifyRequest: '/auth/verify',
+  },
+  callbacks: {
+    async redirect({ url, baseUrl }: RedirectParams) {
+      // Permet à l'utilisateur d'être redirigé vers l'URL d'origine après l'authentification
+      if (url.startsWith(baseUrl)) return url
+      // Sinon, redirige vers la page d'accueil
+      return baseUrl
+    },
+    async session({ session, user }: SessionParams) {
+      if (session?.user) {
+        session.user.id = user.id
+      }
+      return session
     },
   },
-  redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined,
-  onlyThirdPartyProviders: false,
 }

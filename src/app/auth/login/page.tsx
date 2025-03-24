@@ -46,8 +46,18 @@ export default function LoginPage() {
               supabaseClient={supabase}
               appearance={{ theme: ThemeSupa }}
               providers={['github']}
-              redirectTo={`${window.location.origin}/auth/callback`}
+              redirectTo="http://localhost:3000/auth/callback"
               view="sign_in"
+              showLinks={false}
+              localization={{
+                variables: {
+                  sign_in: {
+                    email_label: 'Email',
+                    password_label: 'Mot de passe',
+                    button_label: 'Se connecter',
+                  },
+                },
+              }}
             />
           ) : (
             <SignUpForm onSuccess={() => setMode('login')} />

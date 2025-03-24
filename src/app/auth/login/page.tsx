@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { Auth } from '@supabase/auth-ui-react'
+import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { supabase } from '@/lib/supabase'
-import { authConfig } from '../auth.config'
 import SignUpForm from '@/components/auth/signup-form'
 
 export default function LoginPage() {
@@ -44,7 +44,9 @@ export default function LoginPage() {
           {mode === 'login' ? (
             <Auth
               supabaseClient={supabase}
-              {...authConfig}
+              appearance={{ theme: ThemeSupa }}
+              providers={['github']}
+              redirectTo={`${window.location.origin}/auth/callback`}
               view="sign_in"
             />
           ) : (

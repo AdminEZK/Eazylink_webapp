@@ -34,7 +34,7 @@ export type Project = {
   company_id: string
   budget_min?: number | null
   budget_max?: number | null
-  status: 'draft' | 'published' | 'closed'
+  status: 'draft' | 'published' | 'in_progress' | 'completed' | 'closed'
   skills: string[]
   duration?: string
   location?: string
